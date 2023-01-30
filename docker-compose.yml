@@ -1,0 +1,61 @@
+version: '3.7'
+services:
+  notebookserver:
+    # platform: linux/amd64 # use this for mac m1 chip.
+    build: ./server/
+    # image: jupyter/scipy-notebook:ubuntu-18.04
+    shm_size: '2gb' # increase /dev/shm shared memory from default 64mb to 2gb (for selenium and geckodriver) 
+    environment:  
+
+      # DISPLAY: unix$DISPLAY # on linux
+      # # on windows install XLaunch with: 'choco install vcxsrv' and configure (the installed) XLaunch with check in "Disable access control". Before first time using choco in powershell by admin write: Installer choco: Set-ExecutionPolicy Bypass -Scope Process -Force; ` iex ((New-Object System.Net.WebClient).DownloadString('https://chocolatey.org/install.ps1'))
+      
+      # on mac     Install the latest XQuartz X11 server and run it Activate the option ‘Allow connections from network clients’ in XQuartz settings Quit & restart XQuartz (to activate the setting). Ensure localhost is allowed X11 forwarding: xhost + 127.0.0.1 Inside the docker image, install pygame and set the display variable: DISPLAY=host.docker.internal:0
+      
+      DISPLAY: host.docker.internal:0 
+    volumes: 
+      - ./notebooks:/home/jovyan
+      - ./server/flask:/home/jovyan/flask
+      - /tmp/.X11-unix:/tmp/.X11-unix
+
+    ports: 
+      - "8888:8888"
+#      - "5000:5000"
+    container_name: notebookserver
+    restart: unless-stopped
+    # to use the camera from the host machine. Needs testing!!
+    # devices:
+    #   - /dev/video0:/dev/video0
+    #    environment:
+    #   JUPYTER_RUNTIME_DIR: '/tmp'
+
+
+  # db:
+  #     # image: mysql:8.0
+  #     build: ./mysql/
+  #     container_name: mysql_notebooks
+  #     restart: always
+  #     environment:
+  #       MYSQL_DATABASE: 'db'
+  #       # So you don't have to use root, but you can if you like
+  #       MYSQL_USER: 'dev'
+  #       # You can use whatever password you like
+  #       MYSQL_PASSWORD: 'ax2'
+  #       # Password for root access
+  #       MYSQL_ROOT_PASSWORD: 'root'
+  #     ports:
+  #       # <Port exposed> : < MySQL Port running inside container>
+  #       - '3309:3306'
+  #     expose:
+  #       # Opens port 3306 on the container
+  #       - '3306'
+  #       # Where our data will be persisted
+  #     volumes:
+  #       # - ./mysql/mysql_data:/var/lib/mysql # for data
+  #       - ./mysql/mysql_scripts:/scripts
+      
+  #       # overwrite the entrypoint from original dockerfile keeping the functionality and running a mysql start script: pythondemo.sql
+  #     # command: bash-c "docker-entrypoint.sh mysqld  && mysql -u root -proot < /scripts/pythondemo.sql"
+
+# volumes:
+#     my-db:
