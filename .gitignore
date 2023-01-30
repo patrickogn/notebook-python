@@ -12,7 +12,11 @@ server/fix-permissions
 **/notebooks/.wdm/drivers.json
 **/target/
 **/__pycache__/
-**/my_notebooks/
+
+**/mynoteboksadded her/
+/my_notebooks/
+
+
 **/my_modules/
 **/python_handin2
 **/python_handin_template
